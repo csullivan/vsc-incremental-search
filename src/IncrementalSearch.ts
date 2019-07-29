@@ -22,7 +22,7 @@ export interface SearchOptions {
 export const INITIAL_OPTIONS : SearchOptions = {
 	searchTerm: '',
 	direction: SearchDirection.forward,
-  caseSensitive: true,
+  caseSensitive: false,
 	useRegExp: true,
 	expand: false,
 }
@@ -76,7 +76,7 @@ export class IncrementalSearch {
 	public advance(options: SearchOptions = DEFAULT_OPTIONS) {
 		this.applyOptions(options);
 		let nextPositions : vscode.Position[] = [];
-		this.initialSelections = this.matchedRanges.map((r) => new vscode.Selection(r.start,r.end));
+		//this.initialSelections = this.matchedRanges.map((r) => new vscode.Selection(r.start,r.end));
 		if(this.options.direction == SearchDirection.backward)
 			for(const sel of this.matchedRanges) {
 				nextPositions.push(sel.start);
@@ -124,31 +124,43 @@ export class IncrementalSearch {
 				this.aggregatedSelections = [];
 
 			for(const pos of startingPositions) {
-				const start = this.editor.document.offsetAt(pos);
-				search.lastIndex = start;
-				const match = search.exec(text,this.direction == SearchDirection.backward);
-				if(match !== null && match.length > 0) {
-					const newAnchor = this.editor.document.positionAt(match.index);
-					const newActive = this.editor.document.positionAt(match.index+match[0].length);
-					this.matchedRanges.push(new vscode.Range(newAnchor, newActive));
-
-					if(match.length == 1) {
-						nextSelections.push(new vscode.Selection(newAnchor, newActive));
-					} else {
-						// The regexp contains subgroups
-						matchingGroups = true;
-						// Turn each subgroup into a new selection
-						let offset = 0;
-						match
-							.forEach((m,idx) => {
-								if(idx == 0 || m===undefined)
-									return; // skip the first element
-								offset = match[0].indexOf(m,offset);
-								const newAnchor = this.editor.document.positionAt(match.index+offset);
-								offset+= m.length;
-								const newActive = this.editor.document.positionAt(match.index+offset);
-								nextSelections.push(new vscode.Selection(newAnchor, newActive));
-							});
+                let start = this.editor.document.offsetAt(pos);
+                const retry_position = this.direction == SearchDirection.forward ? 0 : this.editor.document.offsetAt(new vscode.Position(this.editor.document.lineCount, 0));
+                while (true) {
+                    search.lastIndex = start;
+                    const match = search.exec(text, this.direction == SearchDirection.backward);
+                    if (match !== null && match.length > 0) {
+                        const newAnchor = this.editor.document.positionAt(match.index);
+                        const newActive = this.editor.document.positionAt(match.index + match[0].length);
+                        this.matchedRanges.push(new vscode.Range(newAnchor, newActive));
+                        if (match.length == 1) {
+                            nextSelections.push(new vscode.Selection(newAnchor, newActive));
+                        }
+                        else {
+                            // The regexp contains subgroups
+                            matchingGroups = true;
+                            // Turn each subgroup into a new selection
+                            let offset = 0;
+                            match
+                                .forEach((m: any, idx: any) => {
+                                if (idx == 0 || m === undefined)
+                                    return; // skip the first element
+                                offset = match[0].indexOf(m, offset);
+                                const newAnchor = this.editor.document.positionAt(match.index + offset);
+                                offset += m.length;
+                                const newActive = this.editor.document.positionAt(match.index + offset);
+                                nextSelections.push(new vscode.Selection(newAnchor, newActive));
+                            });
+                        }
+                        break;
+					}
+					else {
+                        if (start == retry_position) {
+                            break;
+                        }
+                        else {
+                            start = retry_position;
+                        }
 					}
 				}
 			}
