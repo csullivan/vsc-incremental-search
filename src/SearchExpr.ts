@@ -59,6 +59,12 @@ export class SearchExpr {
 				return this.re.exec(text);
 		} else {
 			let idx;
+      let srchTerm = this.searchTerm;
+      if (!this.caseSensitive) {
+        srchTerm = srchTerm.toLowerCase();
+        text = text.toLowerCase();
+      }
+
 			if(reverse)
 				idx = text.substring(0,this.lastIndex+this.searchTerm.length-1).lastIndexOf(this.searchTerm, this.lastIdx);
 			else
