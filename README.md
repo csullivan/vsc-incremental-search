@@ -2,7 +2,7 @@
 
 This extension provides emacs-like incremental search function.
 
-This extension is forked from [siegebell's "Incremental search for multiple cursors" extension](https://github.com/siegebell/vsc-incremental-search).
+This extension is forked from [alt-core's fork](https://github.com/alt-core/vsc-incremental-search) [ of siegebell's "Incremental search for multiple cursors" extension](https://github.com/siegebell/vsc-incremental-search).
 
 ## Features
 
@@ -45,10 +45,10 @@ Toggles whether the match should be case sensitive.
 ## Known Issues
 
 - 'inline input mode' does not work.
+- 'ctrl+g' doesn't cancel out of the search
 
 ## Release Notes
 
 ### 0.0.1
 
 Initial release of emacs-incremental-search.
-
