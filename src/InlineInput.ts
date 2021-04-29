@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
+let dbg = vscode.window.createOutputChannel("IncrementalSearchInlineInput");
 const INLINE_INPUT_CONTEXT = 'incrementalSearchInlineInput';
 
 const subscriptions : vscode.Disposable[] = [];
