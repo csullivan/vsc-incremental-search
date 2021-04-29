@@ -38,7 +38,7 @@ class Input {
 var registeredTypeCommand = false;
 
 registerTextEditorCommand('extension.incrementalSearch.backspace', onBackspace);
-registerTextEditorCommand('extension.incrementalSearch.stop', onEscape);
+registerTextEditorCommand('extension.incrementalSearch.stopInline', onEscape);
 registerTextEditorCommand('extension.incrementalSearch.complete', onComplete);
 
 const editorInputs = new Map<vscode.TextEditor,Input>();
