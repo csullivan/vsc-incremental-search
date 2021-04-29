@@ -396,12 +396,12 @@
         "vscode-test": "^1.0.0-next.0"
     },
     "bugs": {
-        "url": "https://github.com/eegrok/vsc-incremental-search/issues"
+        "url": "https://github.com/atpsoft/vsc-incremental-search/issues"
     },
-    "homepage": "https://github.com/eegrok/vsc-incremental-search/blob/master/README.md",
+    "homepage": "https://github.com/atpsoft/vsc-incremental-search/blob/master/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/eegrok/vsc-incremental-search.git"
+        "url": "https://github.com/atpsoft/vsc-incremental-search.git"
     },
     "dependencies": {}
 }
