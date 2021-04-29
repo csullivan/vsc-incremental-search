@@ -79,8 +79,8 @@
             },
             {
                 "command": "extension.incrementalSearch.stop",
-                "key": "escape",
-                "when": "editorTextFocus && incrementalSearchInlineInput"
+                "key": "ctrl+g",
+                "when": "incrementalSearch"
             }
         ],
         "configuration": {

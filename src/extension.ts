@@ -13,6 +13,7 @@ let searches = new Map<vscode.TextEditor,IncrementalSearch>();
 
 let matchDecoratation : vscode.TextEditorDecorationType | null = null;
 let selectionDecoratation : vscode.TextEditorDecorationType | null = null;
+let cancellationSource = null;
 
 type DecorateMatchCondition = 'never' | 'always' | 'multigroups';
 type InputMode = 'input-box' | 'inline';
@@ -114,6 +115,13 @@ export function activate(activationContext: vscode.ExtensionContext) {
   // registerTextEditorCommand('extension.incrementalSearch.stop', (editor) => {
   //   cancelSearch(editor);
   // });
+  registerTextEditorCommand('extension.incrementalSearch.stop', (editor: vscode.TextEditor) => {
+    dbg.appendLine("cancel search called");
+    if (cancellationSource != null) {
+      cancellationSource.cancel();
+    }
+    cancelSearch(editor);
+  });
   vscode.window.onDidChangeTextEditorSelection(onSelectionsChanged);
   vscode.window.onDidChangeActiveTextEditor(async () => {
     const search = searches.get(vscode.window.activeTextEditor!);
@@ -222,6 +230,8 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
   if(configuration.inputMode == 'input-box') {
     try {
       updateSearch(search,{searchTerm: ''});
+      cancellationSource = new vscode.CancellationTokenSource();
+      let token = cancellationSource.token;
       const searchTerm = await vscode.window.showInputBox({
         // value: search.searchTerm,
         prompt: "incremental search",
@@ -230,7 +240,9 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
           const result = updateSearch(search,{searchTerm: text});
           return result.error;
         }
-      });
+      }, token);
+      cancellationSource.dispose();
+      cancellationSource = null;
 
       if(searchTerm !== undefined && search.searchTerm) {
         previousSearchTerm = search.searchTerm;
