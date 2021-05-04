@@ -231,11 +231,11 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
 
   if(configuration.inputMode == 'input-box') {
     try {
-      updateSearch(search,{searchTerm: ''});
+      updateSearch(search,{searchTerm: 'previousText'});
       cancellationSource = new vscode.CancellationTokenSource();
       let token = cancellationSource.token;
       const searchTerm = await vscode.window.showInputBox({
-        // value: search.searchTerm,
+        value: previousSearchTerm,
         prompt: "incremental search",
         placeHolder: "enter a search term",
         validateInput: (text: string) => {
@@ -245,9 +245,11 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
       }, token);
       cancellationSource.dispose();
       cancellationSource = null;
+      if (search.searchTerm) {
+        previousSearchTerm = search.searchTerm;
+      }
 
       if(searchTerm !== undefined && search.searchTerm) {
-        previousSearchTerm = search.searchTerm;
         stopSearch(editor,'complete');
       } else {
         if(search)
