@@ -65,7 +65,15 @@ export class IncrementalSearch {
 
 	public cancelSelections() {
 		this.editor.selections = this.initialSelections;
+                this.centerText();
 	}
+
+        public async centerText() {
+          await vscode.commands.executeCommand("revealLine", {
+             lineNumber: vscode.window.activeTextEditor.selection.start.line,
+             at: "center"
+           });
+        }
 
 	public get searchTerm() { return this.options.searchTerm; }
   public get useRegExp() { return this.options.useRegExp; }
