@@ -24,7 +24,7 @@ interface Configuration {
   inputMode: InputMode,
   matchStyle: vscode.DecorationRenderOptions,
   // when to show the style
-  styleMatches: DecorateMatchCondition, 
+  styleMatches: DecorateMatchCondition,
   selectionStyle: vscode.DecorationRenderOptions,
 }
 
@@ -63,56 +63,56 @@ function registerCommand(commandId:string, run:(...args:any[])=>void): void {
 export function activate(activationContext: vscode.ExtensionContext) {
   context = activationContext;
 
-	vscode.commands.executeCommand('setContext', 'incrementalSearch', false);
+  vscode.commands.executeCommand('setContext', 'incrementalSearch', false);
 
-	// if(selectionDecoratation)
-	//   selectionDecoratation.dispose();
-	// selectionDecoratation = vscode.window.createTextEditorDecorationType({
-	//   backgroundColor: 'rgba(0,0,255,0.5)',
-	//   borderRadius: '50%',
-	//   border: '1pt rgba(0,0,100,0.8) solid',
-	// });
-	// matchDecoratation = vscode.window.createTextEditorDecorationType(configuration.matchStyle);
-	// context.subscriptions.push(matchDecoratation);
-  
-	status = new SearchStatusBar('extension.incrementalSearch.toggleCaseSensitivity', 'extension.incrementalSearch.toggleRegExp');
-	context.subscriptions.push(status);
-	loadConfiguration();
-  
-	vscode.workspace.onDidChangeConfiguration(loadConfiguration);
-  
-	registerTextEditorCommand('extension.incrementalSearch.forward', (editor) => {
-	  advanceSearch(editor, {direction: SearchDirection.forward});
-	 });
-  
-	registerTextEditorCommand('extension.incrementalSearch.backward', (editor: vscode.TextEditor) => {
-		  advanceSearch(editor, {direction: SearchDirection.backward});
-	});
-  
-	registerTextEditorCommand('extension.incrementalSearch.expand', (editor: vscode.TextEditor) => {
-		  advanceSearch(editor, {expand: true, direction: SearchDirection.forward});
-	});
-  
-	registerTextEditorCommand('extension.incrementalSearch.backwardExpand', (editor: vscode.TextEditor) => {
-	  advanceSearch(editor, {expand: true, direction: SearchDirection.backward});
-	});
-  
-	registerTextEditorCommand('extension.incrementalSearch.toggleRegExp', (editor: vscode.TextEditor) => {
-	  const search = searches.get(editor);
-	  if (search) {
+  // if(selectionDecoratation)
+  //   selectionDecoratation.dispose();
+  // selectionDecoratation = vscode.window.createTextEditorDecorationType({
+  //   backgroundColor: 'rgba(0,0,255,0.5)',
+  //   borderRadius: '50%',
+  //   border: '1pt rgba(0,0,100,0.8) solid',
+  // });
+  // matchDecoratation = vscode.window.createTextEditorDecorationType(configuration.matchStyle);
+  // context.subscriptions.push(matchDecoratation);
+
+  status = new SearchStatusBar('extension.incrementalSearch.toggleCaseSensitivity', 'extension.incrementalSearch.toggleRegExp');
+  context.subscriptions.push(status);
+  loadConfiguration();
+
+  vscode.workspace.onDidChangeConfiguration(loadConfiguration);
+
+  registerTextEditorCommand('extension.incrementalSearch.forward', (editor) => {
+    advanceSearch(editor, {direction: SearchDirection.forward});
+  });
+
+  registerTextEditorCommand('extension.incrementalSearch.backward', (editor: vscode.TextEditor) => {
+    advanceSearch(editor, {direction: SearchDirection.backward});
+  });
+
+  registerTextEditorCommand('extension.incrementalSearch.expand', (editor: vscode.TextEditor) => {
+    advanceSearch(editor, {expand: true, direction: SearchDirection.forward});
+  });
+
+  registerTextEditorCommand('extension.incrementalSearch.backwardExpand', (editor: vscode.TextEditor) => {
+    advanceSearch(editor, {expand: true, direction: SearchDirection.backward});
+  });
+
+  registerTextEditorCommand('extension.incrementalSearch.toggleRegExp', (editor: vscode.TextEditor) => {
+    const search = searches.get(editor);
+    if (search) {
       updateSearch(search, {useRegExp: !search.useRegExp});
     }
-	  
-	  context.globalState.update("useRegExp", search!.useRegExp);
-	});
-	registerTextEditorCommand('extension.incrementalSearch.toggleCaseSensitivity', (editor: vscode.TextEditor) => {
-	  const search = searches.get(editor);
-	  if (search) {
+
+    context.globalState.update("useRegExp", search!.useRegExp);
+  });
+  registerTextEditorCommand('extension.incrementalSearch.toggleCaseSensitivity', (editor: vscode.TextEditor) => {
+    const search = searches.get(editor);
+    if (search) {
       updateSearch(search, {caseSensitive: !search.caseSensitive});
     }
-  
-	  context.globalState.update("caseSensitive", search!.caseSensitive);
-    });
+
+    context.globalState.update("caseSensitive", search!.caseSensitive);
+  });
 
   // registerTextEditorCommand('extension.incrementalSearch.stop', (editor) => {
   //   cancelSearch(editor);
@@ -197,7 +197,7 @@ function cancelSearch(editor: vscode.TextEditor) {
 async function stopSearch(editor: vscode.TextEditor, reason: string, forwardCommand = '', ...args: any[]) {
   inlineInput.complete(editor);
 
-  const search = searches.get(editor);  
+  const search = searches.get(editor);
   try {
     await vscode.commands.executeCommand('setContext', 'incrementalSearch', false);
   } catch(e) {}
@@ -261,11 +261,11 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
     try {
       updateSearch(search,{searchTerm: ''});
       const searchTerm = await inlineInput.showInlineInput(editor,'',
-        (text: string) => {
-          const result = updateSearch(search,{searchTerm: text});
-          return result.error!;
-        }
-      );
+                                                           (text: string) => {
+                                                             const result = updateSearch(search,{searchTerm: text});
+                                                             return result.error!;
+                                                           }
+                                                          );
 
       if(searchTerm !== undefined) {
         previousSearchTerm = searchTerm;
@@ -301,7 +301,7 @@ function advanceSearch(editor: vscode.TextEditor, options: SearchOptions) {
       status.update(search.searchTerm!, search.caseSensitive!, search.useRegExp!);
       updateMatchDecorations(search, results);
     }
-  }  
+  }
 }
 
 /** If subgroups are matched, then display a decoration over the entire
@@ -327,8 +327,8 @@ function clearMatchDecorations(search: IncrementalSearch) {
 }
 
 function updateSearch(search: IncrementalSearch, options : SearchOptions) : {error?: string} {
- if(!search)
-   return {};
+  if(!search)
+    return {};
 
   try {
     const results = search.update(options);
