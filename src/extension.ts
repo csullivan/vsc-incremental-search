@@ -15,7 +15,7 @@ let matchDecoratation : vscode.TextEditorDecorationType | null = null;
 let selectionDecoratation : vscode.TextEditorDecorationType | null = null;
 let cancellationSource = null;
 
-let dbg = vscode.window.createOutputChannel("IncrementalSearch");
+let dbg = vscode.window.createOutputChannel("IncrementalSearch-extension");
 
 type DecorateMatchCondition = 'never' | 'always' | 'multigroups';
 type InputMode = 'input-box' | 'inline';
