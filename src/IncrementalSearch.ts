@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import {SearchExpr} from './SearchExpr';
+import * as configuration from './Configuration';
 
 const INCREMENTAL_SEARCH_CONTEXT = 'incrementalSearch';
 
@@ -65,7 +66,9 @@ export class IncrementalSearch {
 
   public cancelSelections() {
     this.editor.selections = this.initialSelections;
-    this.centerText();
+    if (configuration.get().centerText != "never") {
+      this.centerText();
+    }
   }
 
   public async centerText() {
@@ -193,6 +196,9 @@ export class IncrementalSearch {
     const normSelections = normalizeSelections(this.aggregatedSelections.concat(selections));
     this.editor.revealRange(selections[0]);
     this.editor.selections = normSelections;
+    if (configuration.get().centerText == "always") {
+      this.centerText();
+    }
   }
 
 }

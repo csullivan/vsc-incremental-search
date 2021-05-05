@@ -3,7 +3,7 @@
     "displayName": "Emacs-like Incremental Search",
     "description": "Emacs-like Incremental Search",
     "publisher": "atpsoft",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "engines": {
         "vscode": "^1.55.2"
     },
@@ -94,6 +94,15 @@
                     ],
                     "description": "How to get the search term: 'input-box' shows a vscode input box; 'inline' captures the keyboard directly",
                     "default": "input-box"
+                },
+                "incrementalSearch.centerText": {
+                    "enum": [
+                        "always",
+                      "onCancel",
+                        "never"
+                    ],
+                    "description": "When to center the text while searching. 'onCancel' only centers the text when cancelling the current search.",
+                    "default": "always"
                 },
                 "incrementalSearch.styleMatches": {
                     "enum": [

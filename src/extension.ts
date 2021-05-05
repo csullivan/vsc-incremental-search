@@ -4,49 +4,17 @@ import * as vscode from 'vscode';
 import {IncrementalSearch, SearchDirection, SearchOptions} from './IncrementalSearch';
 import {SearchStatusBar} from './SearchStatusBar';
 import * as inlineInput from './InlineInput';
-
+import * as configuration from './Configuration';
 const INCREMENTAL_SEARCH_CONTEXT = 'incrementalSearch';
 
 
 let status : SearchStatusBar;
 let searches = new Map<vscode.TextEditor,IncrementalSearch>();
 
-let matchDecoratation : vscode.TextEditorDecorationType | null = null;
-let selectionDecoratation : vscode.TextEditorDecorationType | null = null;
 let cancellationSource = null;
 
 let dbg = vscode.window.createOutputChannel("IncrementalSearch-extension");
 
-type DecorateMatchCondition = 'never' | 'always' | 'multigroups';
-type InputMode = 'input-box' | 'inline';
-
-interface Configuration {
-  inputMode: InputMode,
-  matchStyle: vscode.DecorationRenderOptions,
-  // when to show the style
-  styleMatches: DecorateMatchCondition,
-  selectionStyle: vscode.DecorationRenderOptions,
-}
-
-let configuration : Configuration = {
-  inputMode: 'input-box',
-  matchStyle: {
-    dark: {
-      border: '1pt white dashed',
-    },
-    light: {
-      border: '1pt black solid',
-    },
-  },
-  styleMatches: 'always',
-  selectionStyle: {
-    backgroundColor: 'rgba(0,0,255,0.5)',
-    borderRadius: '50%',
-    border: '1pt rgba(0,0,100,0.8) solid',
-  },
-};
-
-var decorateSelection = false;
 // var registeredTypeCommand = false;
 var context: vscode.ExtensionContext | null = null;
 
@@ -65,21 +33,19 @@ export function activate(activationContext: vscode.ExtensionContext) {
 
   vscode.commands.executeCommand('setContext', 'incrementalSearch', false);
 
-  // if(selectionDecoratation)
-  //   selectionDecoratation.dispose();
-  // selectionDecoratation = vscode.window.createTextEditorDecorationType({
+  // if(selectionDecoration)
+  //   selectionDecoration.dispose();
+  // selectionDecoration = vscode.window.createTextEditorDecorationType({
   //   backgroundColor: 'rgba(0,0,255,0.5)',
   //   borderRadius: '50%',
   //   border: '1pt rgba(0,0,100,0.8) solid',
   // });
-  // matchDecoratation = vscode.window.createTextEditorDecorationType(configuration.matchStyle);
-  // context.subscriptions.push(matchDecoratation);
+  // matchDecoration = vscode.window.createTextEditorDecorationType(configuration.get().matchStyle);
+  // context.subscriptions.push(matchDecoration);
 
   status = new SearchStatusBar('extension.incrementalSearch.toggleCaseSensitivity', 'extension.incrementalSearch.toggleRegExp');
   context.subscriptions.push(status);
-  loadConfiguration();
-
-  vscode.workspace.onDidChangeConfiguration(loadConfiguration);
+  configuration.activate();
 
   registerTextEditorCommand('extension.incrementalSearch.forward', (editor) => {
     advanceSearch(editor, {direction: SearchDirection.forward});
@@ -137,13 +103,13 @@ export function activate(activationContext: vscode.ExtensionContext) {
     }
   });
   // vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) =>  {
-  //   if(configuration.inputMode=='inline')
+  //   if(configuration.get().inputMode=='inline')
   //     vscode.window.visibleTextEditors.forEach((editor) => {
   //       if(editor.document == event.document)
   //         stopSearch(vscode.window.activeTextEditor, "text document changed") });
   //     })
   // vscode.workspace.onDidCloseTextDocument((document: vscode.TextDocument) =>  {
-  //   if(configuration.inputMode=='inline')
+  //   if(configuration.get().inputMode=='inline')
   //     vscode.window.visibleTextEditors.forEach((editor) => {
   //       if(editor.document == document)
   //         stopSearch(vscode.window.activeTextEditor, "text document closed") });
@@ -155,36 +121,6 @@ export function activate(activationContext: vscode.ExtensionContext) {
   //     updateSearch(search, {searchTerm: search.searchTerm.substr(0,search.searchTerm.length-1)});
   //   }
   // });
-}
-
-function loadConfiguration() {
-  configuration = Object.assign(configuration, vscode.workspace.getConfiguration("incrementalSearch"));
-
-  if(selectionDecoratation)
-    selectionDecoratation.dispose();
-  selectionDecoratation = null;
-  selectionDecoratation = vscode.window.createTextEditorDecorationType(configuration.selectionStyle);
-
-  if(matchDecoratation != null)
-    matchDecoratation.dispose();
-  matchDecoratation = null;
-  matchDecoratation = vscode.window.createTextEditorDecorationType(configuration.matchStyle);
-
-  if(configuration.inputMode == 'input-box')
-    decorateSelection = true;
-
-  // Do not register the 'type' command unless we have to
-  // (potential performance issues)
-  // if(configuration.inputMode == 'inline' && registeredTypeCommand==false) {
-  //   registeredTypeCommand = true;
-  //   registerCommand('type', (event: {text:string}) => {
-  //     const search = searches.get(vscode.window.activeTextEditor);
-  //     if(search && configuration.inputMode == 'inline')
-  //       updateSearch(search,{searchTerm: search.searchTerm + event.text});
-  //     else
-  //       vscode.commands.executeCommand('default:type', event);
-  //   });
-  // }
 }
 
 function cancelSearch(editor: vscode.TextEditor) {
@@ -229,7 +165,7 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
   status.show();
   await vscode.commands.executeCommand('setContext', 'incrementalSearch', true);
 
-  if(configuration.inputMode == 'input-box') {
+  if(configuration.get().inputMode == 'input-box') {
     try {
       updateSearch(search,{searchTerm: 'previousText'});
       cancellationSource = new vscode.CancellationTokenSource();
@@ -259,7 +195,7 @@ async function doSearch(editor: vscode.TextEditor, options : SearchOptions) {
     } catch(e) {
       console.error(e);
     }
-  } else if(configuration.inputMode == 'inline') {
+  } else if(configuration.get().inputMode == 'inline') {
     try {
       updateSearch(search,{searchTerm: ''});
       const searchTerm = await inlineInput.showInlineInput(editor,'',
@@ -310,22 +246,22 @@ function advanceSearch(editor: vscode.TextEditor, options: SearchOptions) {
  * matching range to help the user identify how the regexp is working
  * */
 function updateMatchDecorations(search: IncrementalSearch, results : {matchedRanges: vscode.Range[], matchedGroups: boolean}) {
-  if(selectionDecoratation && decorateSelection)
-    search.getEditor().setDecorations(selectionDecoratation, search.getEditor().selections.map((sel) => new vscode.Range(sel.start,sel.end)));
-  else if(selectionDecoratation)
-    search.getEditor().setDecorations(selectionDecoratation, []);
+  if(configuration.get().selectionDecoration && configuration.get().decorateSelection)
+    search.getEditor().setDecorations(configuration.get().selectionDecoration, search.getEditor().selections.map((sel) => new vscode.Range(sel.start,sel.end)));
+  else if(configuration.get().selectionDecoration)
+    search.getEditor().setDecorations(configuration.get().selectionDecoration, []);
 
-  if(configuration.styleMatches=='always' || (results.matchedGroups && configuration.styleMatches=='multigroups'))
-    search.getEditor().setDecorations(matchDecoratation!, results.matchedRanges);
+  if(configuration.get().styleMatches=='always' || (results.matchedGroups && configuration.get().styleMatches=='multigroups'))
+    search.getEditor().setDecorations(configuration.get().matchDecoration!, results.matchedRanges);
   else
-    search.getEditor().setDecorations(matchDecoratation!, []);
+    search.getEditor().setDecorations(configuration.get().matchDecoration!, []);
 }
 
 function clearMatchDecorations(search: IncrementalSearch) {
-  if(selectionDecoratation && decorateSelection)
-    search.getEditor().setDecorations(selectionDecoratation, []);
+  if(configuration.get().selectionDecoration && configuration.get().decorateSelection)
+    search.getEditor().setDecorations(configuration.get().selectionDecoration, []);
 
-  search.getEditor().setDecorations(matchDecoratation!, []);
+  search.getEditor().setDecorations(configuration.get().matchDecoration!, []);
 }
 
 function updateSearch(search: IncrementalSearch, options : SearchOptions) : {error?: string} {
@@ -356,7 +292,7 @@ function updateSearch(search: IncrementalSearch, options : SearchOptions) : {err
  * this is only used by the inline text input
  */
 function onSelectionsChanged(event:vscode.TextEditorSelectionChangeEvent) {
-  if(configuration.inputMode!='inline')
+  if(configuration.get().inputMode!='inline')
     return;
   const search = searches.get(event.textEditor);
   if(!search)
