@@ -142,36 +142,34 @@ async function doSearch(editor: vscode.TextEditor, options: SearchOptions) {
   status.show();
   await vscode.commands.executeCommand('setContext', 'incrementalSearch', true);
 
-  if (configuration.get().inputMode == 'input-box') {
-    try {
-      updateSearch(search, { searchTerm: 'previousText' });
-      cancellationSource = new vscode.CancellationTokenSource();
-      let token = cancellationSource.token;
-      const searchTerm = await vscode.window.showInputBox({
-        value: previousSearchTerm,
-        prompt: "incremental search",
-        placeHolder: "enter a search term",
-        validateInput: (text: string) => {
-          const result = updateSearch(search, { searchTerm: text });
-          return result.error;
-        }
-      }, token);
-      cancellationSource.dispose();
-      cancellationSource = null;
-      if (search.searchTerm) {
-        previousSearchTerm = search.searchTerm;
+  try {
+    updateSearch(search, { searchTerm: 'previousText' });
+    cancellationSource = new vscode.CancellationTokenSource();
+    let token = cancellationSource.token;
+    const searchTerm = await vscode.window.showInputBox({
+      value: previousSearchTerm,
+      prompt: "incremental search",
+      placeHolder: "enter a search term",
+      validateInput: (text: string) => {
+        const result = updateSearch(search, { searchTerm: text });
+        return result.error;
       }
-
-      if (searchTerm !== undefined && search.searchTerm) {
-        stopSearch(editor, 'complete');
-      } else {
-        if (search)
-          search.cancelSelections();
-        stopSearch(editor, 'cancelled by user');
-      }
-    } catch (e) {
-      console.error(e);
+    }, token);
+    cancellationSource.dispose();
+    cancellationSource = null;
+    if (search.searchTerm) {
+      previousSearchTerm = search.searchTerm;
     }
+
+    if (searchTerm !== undefined && search.searchTerm) {
+      stopSearch(editor, 'complete');
+    } else {
+      if (search)
+        search.cancelSelections();
+      stopSearch(editor, 'cancelled by user');
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 
@@ -202,9 +200,7 @@ function advanceSearch(editor: vscode.TextEditor, options: SearchOptions) {
  * matching range to help the user identify how the regexp is working
  * */
 function updateMatchDecorations(search: IncrementalSearch, results: { matchedRanges: vscode.Range[], matchedGroups: boolean }) {
-  if (configuration.get().selectionDecoration && configuration.get().decorateSelection)
-    search.getEditor().setDecorations(configuration.get().selectionDecoration, search.getEditor().selections.map((sel) => new vscode.Range(sel.start, sel.end)));
-  else if (configuration.get().selectionDecoration)
+  if (configuration.get().selectionDecoration)
     search.getEditor().setDecorations(configuration.get().selectionDecoration, []);
 
   if (configuration.get().styleMatches == 'always' || (results.matchedGroups && configuration.get().styleMatches == 'multigroups'))
@@ -214,9 +210,6 @@ function updateMatchDecorations(search: IncrementalSearch, results: { matchedRan
 }
 
 function clearMatchDecorations(search: IncrementalSearch) {
-  if (configuration.get().selectionDecoration && configuration.get().decorateSelection)
-    search.getEditor().setDecorations(configuration.get().selectionDecoration, []);
-
   search.getEditor().setDecorations(configuration.get().matchDecoration!, []);
 }
 

@@ -1,11 +1,9 @@
 import * as vscode from 'vscode';
 
-type InputMode = 'input-box' | 'inline';
 type DecorateMatchCondition = 'never' | 'always' | 'multigroups';
 type CenterText = 'always' | 'onCancel' | 'never';
 
 interface Configuration {
-  inputMode: InputMode,
   matchStyle: vscode.DecorationRenderOptions,
   centerText: CenterText,
   // when to show the style
@@ -13,13 +11,10 @@ interface Configuration {
   selectionStyle: vscode.DecorationRenderOptions,
   matchDecoration: vscode.TextEditorDecorationType | null;
   selectionDecoration: vscode.TextEditorDecorationType | null;
-  decorateSelection: boolean;
-
 }
 
 
 let configuration: Configuration = {
-  inputMode: 'input-box',
   matchStyle: {
     dark: {
       border: '1pt white dashed',
@@ -36,8 +31,7 @@ let configuration: Configuration = {
     border: '1pt rgba(0,0,100,0.8) solid',
   },
   matchDecoration: null,
-  selectionDecoration: null,
-  decorateSelection: false
+  selectionDecoration: null
 };
 
 export function activate() {
@@ -61,20 +55,4 @@ function loadConfiguration() {
     configuration.matchDecoration.dispose();
   configuration.matchDecoration = null;
   configuration.matchDecoration = vscode.window.createTextEditorDecorationType(configuration.matchStyle);
-
-  if (configuration.inputMode == 'input-box')
-    configuration.decorateSelection = true;
-
-  // Do not register the 'type' command unless we have to
-  // (potential performance issues)
-  // if(configuration.inputMode == 'inline' && registeredTypeCommand==false) {
-  //   registeredTypeCommand = true;
-  //   registerCommand('type', (event: {text:string}) => {
-  //     const search = searches.get(vscode.window.activeTextEditor);
-  //     if(search && configuration.inputMode == 'inline')
-  //       updateSearch(search,{searchTerm: search.searchTerm + event.text});
-  //     else
-  //       vscode.commands.executeCommand('default:type', event);
-  //   });
-  // }
 }
