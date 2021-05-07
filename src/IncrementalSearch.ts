@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {SearchExpr} from './SearchExpr';
+import { SearchExpr } from './SearchExpr';
 import * as configuration from './Configuration';
 
 const INCREMENTAL_SEARCH_CONTEXT = 'incrementalSearch';
@@ -20,7 +20,7 @@ export interface SearchOptions {
   searchTerm?: string,
 }
 
-export const INITIAL_OPTIONS : SearchOptions = {
+export const INITIAL_OPTIONS: SearchOptions = {
   searchTerm: '',
   direction: SearchDirection.forward,
   caseSensitive: false,
@@ -28,7 +28,7 @@ export const INITIAL_OPTIONS : SearchOptions = {
   expand: false,
 }
 
-export const DEFAULT_OPTIONS : SearchOptions = {
+export const DEFAULT_OPTIONS: SearchOptions = {
   searchTerm: undefined,              // use prior value
   direction: SearchDirection.forward, //
   caseSensitive: undefined,           // use prior value
@@ -37,21 +37,21 @@ export const DEFAULT_OPTIONS : SearchOptions = {
 }
 
 function getOrDefault<T>(x: T, d: T) {
-  return x===undefined ? d : x;
+  return x === undefined ? d : x;
 }
 
 
 export class IncrementalSearch {
-  private currentSelections : vscode.Selection[];
-  private initialSelections : vscode.Selection[];
-  private matchedRanges: vscode.Range[]= [];
+  private currentSelections: vscode.Selection[];
+  private initialSelections: vscode.Selection[];
+  private matchedRanges: vscode.Range[] = [];
   // when we do an incremental search and want to keep the previous selections,
   // no are no longer active and are placed in this list
-  private aggregatedSelections : vscode.Selection[] = [];
+  private aggregatedSelections: vscode.Selection[] = [];
 
   constructor(
     private editor: vscode.TextEditor,
-    private options : SearchOptions = INITIAL_OPTIONS
+    private options: SearchOptions = INITIAL_OPTIONS
   ) {
     this.applyOptions(options, INITIAL_OPTIONS);
     this.initialSelections = editor.selections;
@@ -60,7 +60,7 @@ export class IncrementalSearch {
 
   /** Applies new options to the current options. If a propert is undefined, then we keep the prior value */
   public applyOptions(options: SearchOptions, defaults = this.options) {
-    for(const key in INITIAL_OPTIONS)
+    for (const key in INITIAL_OPTIONS)
       this.options[key] = getOrDefault(options[key], defaults[key]);
   }
 
@@ -86,25 +86,25 @@ export class IncrementalSearch {
 
   public advance(options: SearchOptions = DEFAULT_OPTIONS) {
     this.applyOptions(options);
-    let nextPositions : vscode.Position[] = [];
+    let nextPositions: vscode.Position[] = [];
     //this.initialSelections = this.matchedRanges.map((r) => new vscode.Selection(r.start,r.end));
-    if(this.options.direction == SearchDirection.backward)
-      for(const sel of this.matchedRanges) {
-	nextPositions.push(sel.start);
+    if (this.options.direction == SearchDirection.backward)
+      for (const sel of this.matchedRanges) {
+        nextPositions.push(sel.start);
       }
     else // forward search
-      for(const sel of this.matchedRanges) {
-	nextPositions.push(sel.start.translate(0,1));
+      for (const sel of this.matchedRanges) {
+        nextPositions.push(sel.start.translate(0, 1));
       }
     // if(nextSelections.length > 0)
     //   this.initialSelections = nextSelections;
-    if(nextPositions.length > 0)
+    if (nextPositions.length > 0)
       return this.update(options, nextPositions);
     else
       return this.update(options);
   }
 
-  public getSelections() : vscode.Selection[] {
+  public getSelections(): vscode.Selection[] {
     return normalizeSelections(this.aggregatedSelections.concat(this.currentSelections));
   }
 
@@ -116,25 +116,25 @@ export class IncrementalSearch {
     return this.editor;
   }
 
-  public update(options: SearchOptions = DEFAULT_OPTIONS, startingPositions?: vscode.Position[]) : {matchedRanges: vscode.Range[], matchedGroups: boolean} {
+  public update(options: SearchOptions = DEFAULT_OPTIONS, startingPositions?: vscode.Position[]): { matchedRanges: vscode.Range[], matchedGroups: boolean } {
     try {
-      if(!startingPositions)
-	startingPositions = this.initialSelections.map((sel) => sel.active);
+      if (!startingPositions)
+        startingPositions = this.initialSelections.map((sel) => sel.active);
 
       this.applyOptions(options);
 
       const text = this.editor.document.getText();
-      const search = new SearchExpr(this.searchTerm,true,this.useRegExp,this.caseSensitive);
+      const search = new SearchExpr(this.searchTerm, true, this.useRegExp, this.caseSensitive);
       var matchingGroups = false;
       let nextSelections = [];
       this.matchedRanges = [];
 
-      if(options.expand)
-	this.aggregatedSelections = normalizeSelections(this.aggregatedSelections.concat(this.currentSelections));
+      if (options.expand)
+        this.aggregatedSelections = normalizeSelections(this.aggregatedSelections.concat(this.currentSelections));
       else
-	this.aggregatedSelections = [];
+        this.aggregatedSelections = [];
 
-      for(const pos of startingPositions) {
+      for (const pos of startingPositions) {
         let start = this.editor.document.offsetAt(pos);
         const retry_position = this.direction == SearchDirection.forward ? 0 : this.editor.document.offsetAt(new vscode.Position(this.editor.document.lineCount, 0));
         while (true) {
@@ -164,26 +164,26 @@ export class IncrementalSearch {
                 });
             }
             break;
-	  }
-	  else {
+          }
+          else {
             if (start == retry_position) {
               break;
             }
             else {
               start = retry_position;
             }
-	  }
-	}
+          }
+        }
       }
-      if(nextSelections.length > 0)
-	this.setEditorSelections(nextSelections);
+      if (nextSelections.length > 0)
+        this.setEditorSelections(nextSelections);
       else {
-	this.matchedRanges = this.initialSelections;
-	this.setEditorSelections(this.initialSelections);
+        this.matchedRanges = this.initialSelections;
+        this.setEditorSelections(this.initialSelections);
       }
       this.matchedRanges = normalizeRanges(this.matchedRanges);
-      return {matchedRanges: this.matchedRanges, matchedGroups: matchingGroups}
-    } catch(e) {
+      return { matchedRanges: this.matchedRanges, matchedGroups: matchingGroups }
+    } catch (e) {
       this.setEditorSelections(this.initialSelections);
       throw e;
     }
@@ -191,7 +191,7 @@ export class IncrementalSearch {
 
   private setEditorSelections(selections: vscode.Selection[]) {
     this.currentSelections = normalizeSelections(selections);
-    if(this.aggregatedSelections.length + selections.length == 0)
+    if (this.aggregatedSelections.length + selections.length == 0)
       return;
     const normSelections = normalizeSelections(this.aggregatedSelections.concat(selections));
     this.editor.revealRange(selections[0]);
@@ -221,15 +221,15 @@ const normalizeSelections = (selections: vscode.Selection[]) => normalizeRangesG
 // }
 // return results;
 
-function normalizeRangesGeneric<T extends vscode.Range>(selections: T[], TT: { new(anchor: vscode.Position, active: vscode.Position) : T}) : T[] {
+function normalizeRangesGeneric<T extends vscode.Range>(selections: T[], TT: { new(anchor: vscode.Position, active: vscode.Position): T }): T[] {
   const sorted = selections
-	.slice(0,selections.length)
-	.sort((x,y) => x.start.isBefore(y.start) ? -1 : x.start.isAfter(y.start) ? 1 : x.end.isBefore(y.start) ? -1 : x.end.isAfter(y.end) ? 1 : 0);
+    .slice(0, selections.length)
+    .sort((x, y) => x.start.isBefore(y.start) ? -1 : x.start.isAfter(y.start) ? 1 : x.end.isBefore(y.start) ? -1 : x.end.isAfter(y.end) ? 1 : 0);
   const results = [sorted.shift()];
   let currentIdx = 0;
-  for(let idx = 0; idx < sorted.length; ++idx) {
-    if(sorted[idx].start.isBeforeOrEqual(results[currentIdx].end))
-      results[currentIdx] = new TT(results[currentIdx].start,sorted[idx].end)
+  for (let idx = 0; idx < sorted.length; ++idx) {
+    if (sorted[idx].start.isBeforeOrEqual(results[currentIdx].end))
+      results[currentIdx] = new TT(results[currentIdx].start, sorted[idx].end)
     else {
       results.push(sorted[idx]);
       ++currentIdx;

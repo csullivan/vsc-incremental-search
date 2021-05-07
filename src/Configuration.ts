@@ -18,7 +18,7 @@ interface Configuration {
 }
 
 
-let configuration : Configuration = {
+let configuration: Configuration = {
   inputMode: 'input-box',
   matchStyle: {
     dark: {
@@ -52,17 +52,17 @@ export function get() {
 function loadConfiguration() {
   configuration = Object.assign(configuration, vscode.workspace.getConfiguration("incrementalSearch"));
 
-  if(configuration.selectionDecoration)
+  if (configuration.selectionDecoration)
     configuration.selectionDecoration.dispose();
   configuration.selectionDecoration = null;
   configuration.selectionDecoration = vscode.window.createTextEditorDecorationType(configuration.selectionStyle);
 
-  if(configuration.matchDecoration != null)
+  if (configuration.matchDecoration != null)
     configuration.matchDecoration.dispose();
   configuration.matchDecoration = null;
   configuration.matchDecoration = vscode.window.createTextEditorDecorationType(configuration.matchStyle);
 
-  if(configuration.inputMode == 'input-box')
+  if (configuration.inputMode == 'input-box')
     configuration.decorateSelection = true;
 
   // Do not register the 'type' command unless we have to

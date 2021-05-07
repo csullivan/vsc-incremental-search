@@ -1,416 +1,416 @@
 {
-    "name": "emacs-incremental-search",
-    "displayName": "Emacs-like Incremental Search",
-    "description": "Emacs-like Incremental Search",
-    "publisher": "atpsoft",
-    "version": "0.0.5",
-    "engines": {
-        "vscode": "^1.55.2"
-    },
-    "categories": [
-        "Other"
+  "name": "emacs-incremental-search",
+  "displayName": "Emacs-like Incremental Search",
+  "description": "Emacs-like Incremental Search",
+  "publisher": "atpsoft",
+  "version": "0.0.5",
+  "engines": {
+    "vscode": "^1.55.2"
+  },
+  "categories": [
+    "Other"
+  ],
+  "license": "MIT",
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.incrementalSearch.forward",
+        "title": "Incremental Search"
+      },
+      {
+        "command": "extension.incrementalSearch.backward",
+        "title": "Incremental Search (Backward)"
+      }
     ],
-    "license": "MIT",
-    "activationEvents": [
-        "*"
+    "keybindings": [
+      {
+        "command": "extension.incrementalSearch.forward",
+        "key": "ctrl+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.incrementalSearch.backward",
+        "key": "ctrl+r",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.incrementalSearch.forward",
+        "key": "ctrl+s",
+        "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.backward",
+        "key": "ctrl+r",
+        "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.expand",
+        "key": "ctrl+shift+s",
+        "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.backwardExpand",
+        "key": "ctrl+shift+r",
+        "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.toggleRegExp",
+        "key": "alt+r",
+        "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.toggleCaseSensitivity",
+        "key": "alt+c",
+        "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.complete",
+        "key": "enter",
+        "when": "editorTextFocus && incrementalSearchInlineInput"
+      },
+      {
+        "command": "extension.incrementalSearch.backspace",
+        "key": "backspace",
+        "when": "editorTextFocus && incrementalSearchInlineInput"
+      },
+      {
+        "command": "extension.incrementalSearch.stop",
+        "key": "ctrl+g",
+        "when": "incrementalSearch"
+      }
     ],
-    "main": "./out/extension.js",
-    "contributes": {
-        "commands": [
-            {
-                "command": "extension.incrementalSearch.forward",
-                "title": "Incremental Search"
+    "configuration": {
+      "title": "Incremental Search",
+      "type": "object",
+      "properties": {
+        "incrementalSearch.inputMode": {
+          "enum": [
+            "input-box",
+            "inline"
+          ],
+          "description": "How to get the search term: 'input-box' shows a vscode input box; 'inline' captures the keyboard directly",
+          "default": "input-box"
+        },
+        "incrementalSearch.centerText": {
+          "enum": [
+            "always",
+            "onCancel",
+            "never"
+          ],
+          "description": "When to center the text while searching. 'onCancel' only centers the text when cancelling the current search.",
+          "default": "always"
+        },
+        "incrementalSearch.styleMatches": {
+          "enum": [
+            "never",
+            "always",
+            "multigroups"
+          ],
+          "description": "When to apply a style to the resulting matches. 'multigroups' applies the style to the full regexp match when it returns multiple matching groups.",
+          "default": "always"
+        },
+        "incrementalSearch.matchStyle": {
+          "type": "object",
+          "properties": {
+            "backgroundColor": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.backward",
-                "title": "Incremental Search (Backward)"
-            }
-        ],
-        "keybindings": [
-            {
-                "command": "extension.incrementalSearch.forward",
-                "key": "ctrl+s",
-                "when": "editorTextFocus"
+            "color": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.backward",
-                "key": "ctrl+r",
-                "when": "editorTextFocus"
+            "border": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.forward",
-                "key": "ctrl+s",
-                "when": "incrementalSearch"
+            "borderRadius": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.backward",
-                "key": "ctrl+r",
-                "when": "incrementalSearch"
+            "borderColor": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.expand",
-                "key": "ctrl+shift+s",
-                "when": "incrementalSearch"
+            "borderStyle": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.backwardExpand",
-                "key": "ctrl+shift+r",
-                "when": "incrementalSearch"
+            "borderSpacing": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.toggleRegExp",
-                "key": "alt+r",
-                "when": "incrementalSearch"
+            "borderwidth": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.toggleCaseSensitivity",
-                "key": "alt+c",
-                "when": "incrementalSearch"
+            "outline": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.complete",
-                "key": "enter",
-                "when": "editorTextFocus && incrementalSearchInlineInput"
+            "outlineColor": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.backspace",
-                "key": "backspace",
-                "when": "editorTextFocus && incrementalSearchInlineInput"
+            "outlineStyle": {
+              "type": "string"
             },
-            {
-                "command": "extension.incrementalSearch.stop",
-                "key": "ctrl+g",
-                "when": "incrementalSearch"
-            }
-        ],
-        "configuration": {
-            "title": "Incremental Search",
-            "type": "object",
-            "properties": {
-                "incrementalSearch.inputMode": {
-                    "enum": [
-                        "input-box",
-                        "inline"
-                    ],
-                    "description": "How to get the search term: 'input-box' shows a vscode input box; 'inline' captures the keyboard directly",
-                    "default": "input-box"
+            "outlineWidth": {
+              "type": "string"
+            },
+            "dark": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": {
+                  "type": "string"
                 },
-                "incrementalSearch.centerText": {
-                    "enum": [
-                        "always",
-                      "onCancel",
-                        "never"
-                    ],
-                    "description": "When to center the text while searching. 'onCancel' only centers the text when cancelling the current search.",
-                    "default": "always"
+                "color": {
+                  "type": "string"
                 },
-                "incrementalSearch.styleMatches": {
-                    "enum": [
-                        "never",
-                        "always",
-                        "multigroups"
-                    ],
-                    "description": "When to apply a style to the resulting matches. 'multigroups' applies the style to the full regexp match when it returns multiple matching groups.",
-                    "default": "always"
+                "border": {
+                  "type": "string"
                 },
-                "incrementalSearch.matchStyle": {
-                    "type": "object",
-                    "properties": {
-                        "backgroundColor": {
-                            "type": "string"
-                        },
-                        "color": {
-                            "type": "string"
-                        },
-                        "border": {
-                            "type": "string"
-                        },
-                        "borderRadius": {
-                            "type": "string"
-                        },
-                        "borderColor": {
-                            "type": "string"
-                        },
-                        "borderStyle": {
-                            "type": "string"
-                        },
-                        "borderSpacing": {
-                            "type": "string"
-                        },
-                        "borderwidth": {
-                            "type": "string"
-                        },
-                        "outline": {
-                            "type": "string"
-                        },
-                        "outlineColor": {
-                            "type": "string"
-                        },
-                        "outlineStyle": {
-                            "type": "string"
-                        },
-                        "outlineWidth": {
-                            "type": "string"
-                        },
-                        "dark": {
-                            "type": "object",
-                            "properties": {
-                                "backgroundColor": {
-                                    "type": "string"
-                                },
-                                "color": {
-                                    "type": "string"
-                                },
-                                "border": {
-                                    "type": "string"
-                                },
-                                "borderRadius": {
-                                    "type": "string"
-                                },
-                                "borderColor": {
-                                    "type": "string"
-                                },
-                                "borderStyle": {
-                                    "type": "string"
-                                },
-                                "borderSpacing": {
-                                    "type": "string"
-                                },
-                                "borderwidth": {
-                                    "type": "string"
-                                },
-                                "outline": {
-                                    "type": "string"
-                                },
-                                "outlineColor": {
-                                    "type": "string"
-                                },
-                                "outlineStyle": {
-                                    "type": "string"
-                                },
-                                "outlineWidth": {
-                                    "type": "string"
-                                }
-                            },
-                            "description": "Styles to be applied for dark themes"
-                        },
-                        "light": {
-                            "type": "object",
-                            "properties": {
-                                "backgroundColor": {
-                                    "type": "string"
-                                },
-                                "color": {
-                                    "type": "string"
-                                },
-                                "border": {
-                                    "type": "string"
-                                },
-                                "borderRadius": {
-                                    "type": "string"
-                                },
-                                "borderColor": {
-                                    "type": "string"
-                                },
-                                "borderStyle": {
-                                    "type": "string"
-                                },
-                                "borderSpacing": {
-                                    "type": "string"
-                                },
-                                "borderwidth": {
-                                    "type": "string"
-                                },
-                                "outline": {
-                                    "type": "string"
-                                },
-                                "outlineColor": {
-                                    "type": "string"
-                                },
-                                "outlineStyle": {
-                                    "type": "string"
-                                },
-                                "outlineWidth": {
-                                    "type": "string"
-                                }
-                            },
-                            "description": "Styles to be applied for light themes"
-                        }
-                    },
-                    "description": "CSS style properties to be applied to the current substring matches.",
-                    "default": {
-                        "dark": {
-                            "border": "1pt rgba(255,255,255,50) dashed"
-                        },
-                        "light": {
-                            "border": "1pt rgba(0,0,0,50) dashed"
-                        }
-                    }
+                "borderRadius": {
+                  "type": "string"
                 },
-                "incrementalSearch.selectionStyle": {
-                    "type": "object",
-                    "properties": {
-                        "backgroundColor": {
-                            "type": "string"
-                        },
-                        "color": {
-                            "type": "string"
-                        },
-                        "border": {
-                            "type": "string"
-                        },
-                        "borderRadius": {
-                            "type": "string"
-                        },
-                        "borderColor": {
-                            "type": "string"
-                        },
-                        "borderStyle": {
-                            "type": "string"
-                        },
-                        "borderSpacing": {
-                            "type": "string"
-                        },
-                        "borderwidth": {
-                            "type": "string"
-                        },
-                        "outline": {
-                            "type": "string"
-                        },
-                        "outlineColor": {
-                            "type": "string"
-                        },
-                        "outlineStyle": {
-                            "type": "string"
-                        },
-                        "outlineWidth": {
-                            "type": "string"
-                        },
-                        "dark": {
-                            "type": "object",
-                            "properties": {
-                                "backgroundColor": {
-                                    "type": "string"
-                                },
-                                "color": {
-                                    "type": "string"
-                                },
-                                "border": {
-                                    "type": "string"
-                                },
-                                "borderRadius": {
-                                    "type": "string"
-                                },
-                                "borderColor": {
-                                    "type": "string"
-                                },
-                                "borderStyle": {
-                                    "type": "string"
-                                },
-                                "borderSpacing": {
-                                    "type": "string"
-                                },
-                                "borderwidth": {
-                                    "type": "string"
-                                },
-                                "outline": {
-                                    "type": "string"
-                                },
-                                "outlineColor": {
-                                    "type": "string"
-                                },
-                                "outlineStyle": {
-                                    "type": "string"
-                                },
-                                "outlineWidth": {
-                                    "type": "string"
-                                }
-                            },
-                            "description": "Styles to be applied for dark themes"
-                        },
-                        "light": {
-                            "type": "object",
-                            "properties": {
-                                "backgroundColor": {
-                                    "type": "string"
-                                },
-                                "color": {
-                                    "type": "string"
-                                },
-                                "border": {
-                                    "type": "string"
-                                },
-                                "borderRadius": {
-                                    "type": "string"
-                                },
-                                "borderColor": {
-                                    "type": "string"
-                                },
-                                "borderStyle": {
-                                    "type": "string"
-                                },
-                                "borderSpacing": {
-                                    "type": "string"
-                                },
-                                "borderwidth": {
-                                    "type": "string"
-                                },
-                                "outline": {
-                                    "type": "string"
-                                },
-                                "outlineColor": {
-                                    "type": "string"
-                                },
-                                "outlineStyle": {
-                                    "type": "string"
-                                },
-                                "outlineWidth": {
-                                    "type": "string"
-                                }
-                            },
-                            "description": "Styles to be applied for light themes"
-                        }
-                    },
-                    "description": "CSS style properties to be applied to selections.",
-                    "default": {
-                        "dark": {
-                            "backgroundColor": "rgba(0,0,255,0.5)",
-                            "border": "1pt rgba(0,0,100,0.8) solid"
-                        },
-                        "light": {
-                            "backgroundColor": "rgba(100,100,255,0.5)",
-                            "border": "1pt rgba(0,0,100,0.8) solid"
-                        }
-                    }
+                "borderColor": {
+                  "type": "string"
+                },
+                "borderStyle": {
+                  "type": "string"
+                },
+                "borderSpacing": {
+                  "type": "string"
+                },
+                "borderwidth": {
+                  "type": "string"
+                },
+                "outline": {
+                  "type": "string"
+                },
+                "outlineColor": {
+                  "type": "string"
+                },
+                "outlineStyle": {
+                  "type": "string"
+                },
+                "outlineWidth": {
+                  "type": "string"
                 }
+              },
+              "description": "Styles to be applied for dark themes"
+            },
+            "light": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "border": {
+                  "type": "string"
+                },
+                "borderRadius": {
+                  "type": "string"
+                },
+                "borderColor": {
+                  "type": "string"
+                },
+                "borderStyle": {
+                  "type": "string"
+                },
+                "borderSpacing": {
+                  "type": "string"
+                },
+                "borderwidth": {
+                  "type": "string"
+                },
+                "outline": {
+                  "type": "string"
+                },
+                "outlineColor": {
+                  "type": "string"
+                },
+                "outlineStyle": {
+                  "type": "string"
+                },
+                "outlineWidth": {
+                  "type": "string"
+                }
+              },
+              "description": "Styles to be applied for light themes"
             }
+          },
+          "description": "CSS style properties to be applied to the current substring matches.",
+          "default": {
+            "dark": {
+              "border": "1pt rgba(255,255,255,50) dashed"
+            },
+            "light": {
+              "border": "1pt rgba(0,0,0,50) dashed"
+            }
+          }
+        },
+        "incrementalSearch.selectionStyle": {
+          "type": "object",
+          "properties": {
+            "backgroundColor": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            },
+            "border": {
+              "type": "string"
+            },
+            "borderRadius": {
+              "type": "string"
+            },
+            "borderColor": {
+              "type": "string"
+            },
+            "borderStyle": {
+              "type": "string"
+            },
+            "borderSpacing": {
+              "type": "string"
+            },
+            "borderwidth": {
+              "type": "string"
+            },
+            "outline": {
+              "type": "string"
+            },
+            "outlineColor": {
+              "type": "string"
+            },
+            "outlineStyle": {
+              "type": "string"
+            },
+            "outlineWidth": {
+              "type": "string"
+            },
+            "dark": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "border": {
+                  "type": "string"
+                },
+                "borderRadius": {
+                  "type": "string"
+                },
+                "borderColor": {
+                  "type": "string"
+                },
+                "borderStyle": {
+                  "type": "string"
+                },
+                "borderSpacing": {
+                  "type": "string"
+                },
+                "borderwidth": {
+                  "type": "string"
+                },
+                "outline": {
+                  "type": "string"
+                },
+                "outlineColor": {
+                  "type": "string"
+                },
+                "outlineStyle": {
+                  "type": "string"
+                },
+                "outlineWidth": {
+                  "type": "string"
+                }
+              },
+              "description": "Styles to be applied for dark themes"
+            },
+            "light": {
+              "type": "object",
+              "properties": {
+                "backgroundColor": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "border": {
+                  "type": "string"
+                },
+                "borderRadius": {
+                  "type": "string"
+                },
+                "borderColor": {
+                  "type": "string"
+                },
+                "borderStyle": {
+                  "type": "string"
+                },
+                "borderSpacing": {
+                  "type": "string"
+                },
+                "borderwidth": {
+                  "type": "string"
+                },
+                "outline": {
+                  "type": "string"
+                },
+                "outlineColor": {
+                  "type": "string"
+                },
+                "outlineStyle": {
+                  "type": "string"
+                },
+                "outlineWidth": {
+                  "type": "string"
+                }
+              },
+              "description": "Styles to be applied for light themes"
+            }
+          },
+          "description": "CSS style properties to be applied to selections.",
+          "default": {
+            "dark": {
+              "backgroundColor": "rgba(0,0,255,0.5)",
+              "border": "1pt rgba(0,0,100,0.8) solid"
+            },
+            "light": {
+              "backgroundColor": "rgba(100,100,255,0.5)",
+              "border": "1pt rgba(0,0,100,0.8) solid"
+            }
+          }
         }
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile",
-        "test": "node ./out/test/runTest.js"
-    },
-    "devDependencies": {
-        "@types/glob": "^7.1.1",
-        "@types/mocha": "^5.2.6",
-        "@types/node": "^10.17.59",
-        "@types/vscode": "^1.36.0",
-        "glob": "^7.1.4",
-        "mocha": "^6.1.4",
-        "tslint": "^5.12.1",
-        "typescript": "^3.3.1",
-        "vscode-test": "^1.0.0-next.0"
-    },
-    "bugs": {
-        "url": "https://github.com/atpsoft/vsc-incremental-search/issues"
-    },
-    "homepage": "https://github.com/atpsoft/vsc-incremental-search/blob/master/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/atpsoft/vsc-incremental-search.git"
-    },
-    "dependencies": {}
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.17.59",
+    "@types/vscode": "^1.36.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode-test": "^1.0.0-next.0"
+  },
+  "bugs": {
+    "url": "https://github.com/atpsoft/vsc-incremental-search/issues"
+  },
+  "homepage": "https://github.com/atpsoft/vsc-incremental-search/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atpsoft/vsc-incremental-search.git"
+  },
+  "dependencies": {}
 }
