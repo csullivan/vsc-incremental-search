@@ -46,27 +46,28 @@ Toggles whether the match should be case sensitive.
 
 ## Release Notes
 
-### 0.0.1
+### 0.0.6
 
-Initial release of emacs-incremental-search.
-
-### 0.0.2
-
-fix broken case insensitive non-regexp search
-
-### 0.0.3
-
-make ctrl+g cancel out of input box
-
-### 0.0.4
-
-center on cursor when cancelling a selection
+update README to reflect current state, remove some dead code
 
 ### 0.0.5
 
 keep previous search term & reuse when starting search
 add configuration for centering text in different ways
 
-### 0.0.6
+### 0.0.4
 
-update README to reflect current state, remove some dead code
+center on cursor when cancelling a selection
+
+### 0.0.3
+
+make ctrl+g cancel out of input box
+
+### 0.0.2
+
+fix broken case insensitive non-regexp search
+
+### 0.0.1
+
+Initial release of emacs-incremental-search.
+
