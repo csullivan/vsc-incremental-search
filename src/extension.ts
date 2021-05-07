@@ -3,7 +3,6 @@
 import * as vscode from 'vscode';
 import { IncrementalSearch, SearchDirection, SearchOptions } from './IncrementalSearch';
 import { SearchStatusBar } from './SearchStatusBar';
-import * as inlineInput from './InlineInput';
 import * as configuration from './Configuration';
 const INCREMENTAL_SEARCH_CONTEXT = 'incrementalSearch';
 
@@ -90,7 +89,6 @@ export function activate(activationContext: vscode.ExtensionContext) {
     }
     cancelSearch(editor);
   });
-  vscode.window.onDidChangeTextEditorSelection(onSelectionsChanged);
   vscode.window.onDidChangeActiveTextEditor(async () => {
     const search = searches.get(vscode.window.activeTextEditor!);
     if (search) {
@@ -102,25 +100,6 @@ export function activate(activationContext: vscode.ExtensionContext) {
       await vscode.commands.executeCommand('setContext', 'incrementalSearch', false);
     }
   });
-  // vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) =>  {
-  //   if(configuration.get().inputMode=='inline')
-  //     vscode.window.visibleTextEditors.forEach((editor) => {
-  //       if(editor.document == event.document)
-  //         stopSearch(vscode.window.activeTextEditor, "text document changed") });
-  //     })
-  // vscode.workspace.onDidCloseTextDocument((document: vscode.TextDocument) =>  {
-  //   if(configuration.get().inputMode=='inline')
-  //     vscode.window.visibleTextEditors.forEach((editor) => {
-  //       if(editor.document == document)
-  //         stopSearch(vscode.window.activeTextEditor, "text document closed") });
-  //     })
-
-  // registerTextEditorCommand('extension.incrementalSearch.backspace', (editor: vscode.TextEditor) => {
-  //   const search = searches.get(editor);
-  //   if(search) {
-  //     updateSearch(search, {searchTerm: search.searchTerm.substr(0,search.searchTerm.length-1)});
-  //   }
-  // });
 }
 
 function cancelSearch(editor: vscode.TextEditor) {
@@ -131,8 +110,6 @@ function cancelSearch(editor: vscode.TextEditor) {
 }
 
 async function stopSearch(editor: vscode.TextEditor, reason: string, forwardCommand = '', ...args: any[]) {
-  inlineInput.complete(editor);
-
   const search = searches.get(editor);
   try {
     await vscode.commands.executeCommand('setContext', 'incrementalSearch', false);
@@ -191,27 +168,6 @@ async function doSearch(editor: vscode.TextEditor, options: SearchOptions) {
         if (search)
           search.cancelSelections();
         stopSearch(editor, 'cancelled by user');
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  } else if (configuration.get().inputMode == 'inline') {
-    try {
-      updateSearch(search, { searchTerm: '' });
-      const searchTerm = await inlineInput.showInlineInput(editor, '',
-        (text: string) => {
-          const result = updateSearch(search, { searchTerm: text });
-          return result.error!;
-        }
-      );
-
-      if (searchTerm !== undefined) {
-        previousSearchTerm = searchTerm;
-        stopSearch(editor, 'complete');
-      } else {
-        if (search)
-          search.cancelSelections();
-        stopSearch(editor, 'cancelled input');
       }
     } catch (e) {
       console.error(e);
@@ -288,27 +244,6 @@ function updateSearch(search: IncrementalSearch, options: SearchOptions): { erro
 
 
 
-/** Stops search if anyone else tries to modify the editor selections
- * this is only used by the inline text input
- */
-function onSelectionsChanged(event: vscode.TextEditorSelectionChangeEvent) {
-  if (configuration.get().inputMode != 'inline')
-    return;
-  const search = searches.get(event.textEditor);
-  if (!search)
-    return;
-
-  // If the selection has changed and no longer agree's with what the search ex
-  const selections = search.getSelections();
-  if (event.selections.length != selections.length)
-    stopSearch(event.textEditor, "interference on selection");
-  for (let idx = 0; idx < selections.length; ++idx) {
-    if (!selections[idx].isEqual(event.selections[idx])) {
-      stopSearch(event.textEditor, "interference on selection");
-      return;
-    }
-  }
-}
 
 
 // this method is called when your extension is deactivated

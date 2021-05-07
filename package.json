@@ -68,16 +68,6 @@
         "when": "incrementalSearch"
       },
       {
-        "command": "extension.incrementalSearch.complete",
-        "key": "enter",
-        "when": "editorTextFocus && incrementalSearchInlineInput"
-      },
-      {
-        "command": "extension.incrementalSearch.backspace",
-        "key": "backspace",
-        "when": "editorTextFocus && incrementalSearchInlineInput"
-      },
-      {
         "command": "extension.incrementalSearch.stop",
         "key": "ctrl+g",
         "when": "incrementalSearch"
@@ -87,14 +77,6 @@
       "title": "Incremental Search",
       "type": "object",
       "properties": {
-        "incrementalSearch.inputMode": {
-          "enum": [
-            "input-box",
-            "inline"
-          ],
-          "description": "How to get the search term: 'input-box' shows a vscode input box; 'inline' captures the keyboard directly",
-          "default": "input-box"
-        },
         "incrementalSearch.centerText": {
           "enum": [
             "always",
