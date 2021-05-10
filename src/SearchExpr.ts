@@ -27,6 +27,9 @@ function regexpReverseExec(re: RegExp, text: string, start?: number) {
     return lastMatch;
 }
 
+function hasUpperCase(str) {
+  return (/[A-Z]/.test(str));
+}
 
 export class SearchExpr {
   private re: RegExp;
@@ -60,7 +63,9 @@ export class SearchExpr {
     } else {
       let idx;
       let srchTerm = this.searchTerm;
-      if (!this.caseSensitive) {
+      // if we have toggled on case sensitivity, or there are any uppercase
+      // characters in the search, then we want to be case sensitive.
+      if (!(this.caseSensitive || hasUpperCase(srchTerm))) {
         srchTerm = srchTerm.toLowerCase();
         text = text.toLowerCase();
       }
