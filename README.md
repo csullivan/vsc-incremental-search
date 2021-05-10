@@ -46,6 +46,10 @@ Toggles whether the match should be case sensitive.
 
 ## Release Notes
 
+### 0.0.7
+
+default to case sensitive when there are uppercase chars in the search
+
 ### 0.0.6
 
 update README to reflect current state, remove some dead code

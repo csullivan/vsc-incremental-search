@@ -3,7 +3,7 @@
   "displayName": "Emacs-like Incremental Search",
   "description": "Emacs-like Incremental Search",
   "publisher": "atpsoft",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "vscode": "^1.55.2"
   },
