@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-let dbg = vscode.window.createOutputChannel("IncrementalSearch");
+let dbg = vscode.window.createOutputChannel("IncrementalSearch-SearchExpr");
 
 function regexpReverseExec(re: RegExp, text: string, start?: number) {
   if (start === undefined)
