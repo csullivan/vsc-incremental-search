@@ -1,5 +1,9 @@
 # Change Log
 
+### 0.0.9
+
+clear selection when finishing incremental search
+
 ### 0.0.8
 
 add centerText method defaulting to Ctrl+L
