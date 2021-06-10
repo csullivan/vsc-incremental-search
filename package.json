@@ -71,6 +71,11 @@
         "command": "extension.incrementalSearch.stop",
         "key": "ctrl+g",
         "when": "incrementalSearch"
+      },
+      {
+        "command": "extension.incrementalSearch.centerText",
+        "key": "ctrl+l",
+        "when": "editorTextFocus"
       }
     ],
     "configuration": {

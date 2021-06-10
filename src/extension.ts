@@ -78,6 +78,9 @@ export function activate(activationContext: vscode.ExtensionContext) {
 
     context.globalState.update("caseSensitive", search!.caseSensitive);
   });
+  registerTextEditorCommand('extension.incrementalSearch.centerText', (editor: vscode.TextEditor) => {
+    IncrementalSearch.centerText();
+  });
 
   // registerTextEditorCommand('extension.incrementalSearch.stop', (editor) => {
   //   cancelSearch(editor);
