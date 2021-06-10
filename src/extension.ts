@@ -123,7 +123,7 @@ async function stopSearch(editor: vscode.TextEditor, reason: string, forwardComm
     clearMatchDecorations(search);
     searches.delete(editor);
   }
-
+  vscode.commands.executeCommand("cancelSelection");
   status.hide();
 
   try {
