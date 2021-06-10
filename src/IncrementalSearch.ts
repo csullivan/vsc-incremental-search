@@ -67,11 +67,11 @@ export class IncrementalSearch {
   public cancelSelections() {
     this.editor.selections = this.initialSelections;
     if (configuration.get().centerText != "never") {
-      this.centerText();
+      IncrementalSearch.centerText();
     }
   }
 
-  public async centerText() {
+  public static async centerText() {
     await vscode.commands.executeCommand("revealLine", {
       lineNumber: vscode.window.activeTextEditor.selection.start.line,
       at: "center"
@@ -197,7 +197,7 @@ export class IncrementalSearch {
     this.editor.revealRange(selections[0]);
     this.editor.selections = normSelections;
     if (configuration.get().centerText == "always") {
-      this.centerText();
+      IncrementalSearch.centerText();
     }
   }
 
