@@ -160,9 +160,10 @@ async function doSearch(editor: vscode.TextEditor, options: SearchOptions) {
     }, token);
     cancellationSource.dispose();
     cancellationSource = null;
-    if (search.searchTerm) {
-      previousSearchTerm = search.searchTerm;
-    }
+    // Update(csullivan): Prefer to not have prefill of prior search
+    // if (search.searchTerm) {
+    //   previousSearchTerm = search.searchTerm;
+    // }
 
     if (searchTerm !== undefined && search.searchTerm) {
       stopSearch(editor, 'complete');

@@ -24,7 +24,7 @@ export const INITIAL_OPTIONS: SearchOptions = {
   searchTerm: '',
   direction: SearchDirection.forward,
   caseSensitive: false,
-  useRegExp: true,
+  useRegExp: false,
   expand: false,
 }
 
