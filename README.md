@@ -1,5 +1,15 @@
 # emacs-incremental-search
 
+```
+   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+   npm install --save-dev @types/vscode@1.55.0
+   npm install
+   npm run compile
+   npm install -g vsce
+   vsce package
+```
+
 This extension provides emacs-like incremental search function.
 
 This extension is forked from [alt-core's fork](https://github.com/alt-core/vsc-incremental-search) [ of siegebell's "Incremental search for multiple cursors" extension](https://github.com/siegebell/vsc-incremental-search).

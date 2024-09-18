@@ -54,8 +54,8 @@ export class IncrementalSearch {
     private options: SearchOptions = INITIAL_OPTIONS
   ) {
     this.applyOptions(options, INITIAL_OPTIONS);
-    this.initialSelections = editor.selections;
-    this.currentSelections = editor.selections;
+    this.initialSelections = [...editor.selections];
+    this.currentSelections = [...editor.selections];
   }
 
   /** Applies new options to the current options. If a propert is undefined, then we keep the prior value */
