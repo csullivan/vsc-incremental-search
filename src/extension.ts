@@ -135,10 +135,26 @@ async function stopSearch(editor: vscode.TextEditor, reason: string, forwardComm
 }
 
 let previousSearchTerm = '';
-async function doSearch(editor: vscode.TextEditor, options: SearchOptions) {
-  if (searches.has(editor))
-    return;
+let isSecondKeypress = false;
+let hasPopulatedPreviousTerm = false;
 
+async function doSearch(editor: vscode.TextEditor, options: SearchOptions) {
+  if (searches.has(editor)) {
+    const search = searches.get(editor)!;
+    if (search.searchTerm === '' && previousSearchTerm !== '' && isSecondKeypress && !hasPopulatedPreviousTerm) {
+      updateSearch(search, { searchTerm: previousSearchTerm });
+      hasPopulatedPreviousTerm = true;
+      return;
+    } else {
+      const results = search.advance(options);
+      status.update(search.searchTerm!, search.caseSensitive!, search.useRegExp!);
+      updateMatchDecorations(search, results);
+    }
+    return;
+  }
+
+  isSecondKeypress = false;
+  hasPopulatedPreviousTerm = false;
   const search = new IncrementalSearch(editor, options);
   searches.set(editor, search);
   status.update(search.searchTerm!, search.caseSensitive!, search.useRegExp!, { backward: search.direction == SearchDirection.backward });
@@ -146,26 +162,29 @@ async function doSearch(editor: vscode.TextEditor, options: SearchOptions) {
   await vscode.commands.executeCommand('setContext', 'incrementalSearch', true);
 
   try {
-    updateSearch(search, { searchTerm: 'previousText' });
+    updateSearch(search, { searchTerm: '' });
     cancellationSource = new vscode.CancellationTokenSource();
     let token = cancellationSource.token;
+
     const searchTerm = await vscode.window.showInputBox({
-      value: previousSearchTerm,
       prompt: "incremental search",
       placeHolder: "enter a search term",
+      value: '',  // Always start empty
       validateInput: (text: string) => {
         const result = updateSearch(search, { searchTerm: text });
+        if (text !== '') {
+          isSecondKeypress = false;
+          hasPopulatedPreviousTerm = false;
+        }
         return result.error;
       }
     }, token);
+
     cancellationSource.dispose();
     cancellationSource = null;
-    // Update(csullivan): Prefer to not have prefill of prior search
-    // if (search.searchTerm) {
-    //   previousSearchTerm = search.searchTerm;
-    // }
 
     if (searchTerm !== undefined && search.searchTerm) {
+      previousSearchTerm = search.searchTerm;
       stopSearch(editor, 'complete');
     } else {
       if (search)
@@ -186,17 +205,13 @@ function advanceSearch(editor: vscode.TextEditor, options: SearchOptions) {
       options.useRegExp = useRegExp;
     if (caseSensitive !== undefined)
       options.caseSensitive = caseSensitive;
+    
+    isSecondKeypress = false;
+    hasPopulatedPreviousTerm = false;
     doSearch(editor, options);
   } else {
-    if (search.searchTerm == '') {
-      if (previousSearchTerm != '') {
-        updateSearch(search, { searchTerm: previousSearchTerm });
-      }
-    } else {
-      const results = search.advance(options);
-      status.update(search.searchTerm!, search.caseSensitive!, search.useRegExp!);
-      updateMatchDecorations(search, results);
-    }
+    isSecondKeypress = true;
+    doSearch(editor, options);
   }
 }
 
